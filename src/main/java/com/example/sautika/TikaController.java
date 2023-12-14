@@ -5,6 +5,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.image.JpegParser;
 import org.apache.tika.parser.pdf.PDFParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,10 @@ public class TikaController {
     @PostMapping("/tika/pdf")
     public String pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
+        File tt = new File("C:\\Users\\HP\\OneDrive\\Documents\\"+fileName);
+        if (!tt.exists()) {
+            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+        }
         file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
@@ -59,14 +64,17 @@ public class TikaController {
     /*@PostMapping("/tika/image")
     public String image(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+        File tt = new File("C:\\Users\\HP\\OneDrive\\Documents\\"+fileName);
+        if (!tt.exists()) {
+            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+        }
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
         FileInputStream inputstream = new FileInputStream("C:\\Users\\HP\\OneDrive\\Documents\\"+fileName);
         ParseContext pcontext = new ParseContext();
 
-        JpegParser  JpegParser = new JpegParser();
+        JpegParser JpegParser = new JpegParser();
         JpegParser.parse(inputstream, handler, metadata,pcontext);
         System.out.println("Contents of the document:" + handler.toString());
         System.out.println("Metadata of the document:");
@@ -75,7 +83,7 @@ public class TikaController {
         for(String name : metadataNames) {
             System.out.println(name + ": " + metadata.get(name));
         }
-
+        tt.delete();
         return handler.toString();
     }*/
 }
