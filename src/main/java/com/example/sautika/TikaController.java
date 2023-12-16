@@ -5,6 +5,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.pdf.PDFParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,22 +13,24 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import java.io.*;
+import java.util.ArrayList;
 
 @RestController
+@CrossOrigin("http://localhost:3000/")
 public class TikaController {
 
     @PostMapping("/tika/pdf")
-    public String pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
+    public ArrayList<String> pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        File tt = new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName);
+        File tt = new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName);
         if (!tt.exists()) {
-            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+            file.transferTo(new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
-        FileInputStream inputstream = new FileInputStream("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName);
+        FileInputStream inputstream = new FileInputStream("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName);
         ParseContext pcontext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
@@ -38,10 +41,15 @@ public class TikaController {
         System.out.println("Metadata of the PDF:");
         String[] metadataNames = metadata.names();
 
+        ArrayList<String> response = new ArrayList<>();
+        response.add(handler.toString());
+
         for (String name : metadataNames) {
             System.out.println(name + " : " + metadata.get(name));
+            response.add(name + " : " + metadata.get(name));
         }
-        return handler.toString();
+
+        return response;
     }
 
     /*@GetMapping("/tika/myfile")
@@ -85,10 +93,10 @@ public class TikaController {
     @PostMapping("/tika/allFiles")
     public String allFiles(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        String filePath = "C:\\Users\\HP\\OneDrive\\Documents\\" + fileName;
+        String filePath = "D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName;
         File tt = new File(filePath);
         if (!tt.exists()) {
-            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+            file.transferTo(new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         Process pp = Runtime.getRuntime().exec("curl -T " + filePath + " http://localhost:9998/tika");
@@ -100,6 +108,7 @@ public class TikaController {
             builder.append(System.getProperty("line.separator"));
         }
         String result = builder.toString();
+        System.out.println(result+"res");
         /*BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
