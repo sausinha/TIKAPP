@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
@@ -18,20 +19,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @RestController
+@CrossOrigin("http://localhost:3000/")
 public class TikaController {
 
     @PostMapping("/tika/pdf")
     public String pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        File tt = new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName);
+        File tt = new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName);
         if (!tt.exists()) {
-            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+            file.transferTo(new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
-        FileInputStream inputstream = new FileInputStream("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName);
+        FileInputStream inputstream = new FileInputStream("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName);
         ParseContext pcontext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
@@ -89,10 +91,10 @@ public class TikaController {
     @PostMapping("/tika/allTypeSingleFiles")
     public String singleFile(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        String filePath = "C:\\Users\\HP\\OneDrive\\Documents\\" + fileName;
+        String filePath = "D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName;
         File tt = new File(filePath);
         if (!tt.exists()) {
-            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+            file.transferTo(new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         Process pp = Runtime.getRuntime().exec("curl -T " + filePath + " http://localhost:9998/tika");
