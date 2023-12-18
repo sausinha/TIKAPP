@@ -21,19 +21,19 @@ import java.util.Arrays;
 @RestController
 @CrossOrigin("http://localhost:3000/")
 public class TikaController {
-
+    public String path = "D:\\docker_test\\";
     @PostMapping("/tika/pdf")
     public ArrayList<String> pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        File tt = new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName);
+        File tt = new File(path + fileName);
         if (!tt.exists()) {
-            file.transferTo(new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName));
+            file.transferTo(new File(path + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
-        FileInputStream inputstream = new FileInputStream("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName);
+        FileInputStream inputstream = new FileInputStream(path + fileName);
         ParseContext pcontext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
@@ -96,10 +96,10 @@ public class TikaController {
     @PostMapping("/tika/allTypeSingleFiles")
     public String singleFile(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        String filePath = "D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName;
+        String filePath = path + fileName;
         File tt = new File(filePath);
         if (!tt.exists()) {
-            file.transferTo(new File("D:\\sem 8\\wells fargo\\pdf_compare\\" + fileName));
+            file.transferTo(new File(path + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         Process pp = Runtime.getRuntime().exec("curl -T " + filePath + " http://localhost:9998/tika");
