@@ -7,9 +7,9 @@ import org.apache.tika.parser.pdf.PDFParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
@@ -19,21 +19,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @RestController
-@CrossOrigin("http://localhost:3000/")
 public class TikaController {
-    public String path = "D:\\docker_test\\";
+
     @PostMapping("/tika/pdf")
-    public ArrayList<String> pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
+    public String pdf(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
         String fileName = file.getOriginalFilename();
-        File tt = new File(path + fileName);
+        File tt = new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName);
         if (!tt.exists()) {
-            file.transferTo(new File(path + fileName));
+            file.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         }
         //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
-        FileInputStream inputstream = new FileInputStream(path + fileName);
+        FileInputStream inputstream = new FileInputStream("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName);
         ParseContext pcontext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
@@ -44,15 +43,10 @@ public class TikaController {
         System.out.println("Metadata of the PDF:");
         String[] metadataNames = metadata.names();
 
-        ArrayList<String> response = new ArrayList<>();
-        response.add(handler.toString());
-
         for (String name : metadataNames) {
             System.out.println(name + " : " + metadata.get(name));
-            response.add(name + " : " + metadata.get(name));
         }
-
-        return response;
+        return handler.toString();
     }
 
     /*@GetMapping("/tika/myfile")
@@ -95,6 +89,8 @@ public class TikaController {
 
     @PostMapping("/tika/allTypeSingleFiles")
     public String singleFile(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
+        String path = "D:\\docker_test\\";
+
         String fileName = file.getOriginalFilename();
         String filePath = path + fileName;
         File tt = new File(filePath);
@@ -111,7 +107,6 @@ public class TikaController {
             builder.append(System.getProperty("line.separator"));
         }
         String result = builder.toString();
-        System.out.println(result+"res");
         /*BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         //FileInputStream inputstream = new FileInputStream(fileName);
@@ -133,19 +128,20 @@ public class TikaController {
     }
 
     @PostMapping("/tika/allTypesMultiFile")
-    public ResponseEntity<ArrayList<String>> allFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<ArrayList<String>> allFiles(@RequestPart("files") MultipartFile[] files) {
         ArrayList<String> responseList = new ArrayList<>();
         Arrays.asList(files).stream().forEach(file -> getResponse(file, responseList));
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 
     private static ResponseEntity<ArrayList<String>> getResponse(MultipartFile files, ArrayList<String> responseList) {
+        String path = "D:\\docker_test\\";
         try {
             String fileName = files.getOriginalFilename();
-            String filePath = "C:\\Users\\HP\\OneDrive\\Documents\\" + fileName;
+            String filePath = path + fileName;
             File tt = new File(filePath);
             if (!tt.exists()) {
-                files.transferTo(new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
+                files.transferTo(new File(path + fileName));
             }
             //file.transferTo( new File("C:\\Users\\HP\\OneDrive\\Documents\\" + fileName));
             Process pp = Runtime.getRuntime().exec("curl -T " + filePath + " http://localhost:9998/tika");
